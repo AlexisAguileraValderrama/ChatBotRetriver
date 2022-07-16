@@ -1,3 +1,6 @@
+nlp_transformer
+apikey.txt
+
 *.bundle.*
 lib/
 node_modules/
