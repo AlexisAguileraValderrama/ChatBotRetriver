@@ -5,7 +5,7 @@ from RetrieverSearch import RetrieverChatBot
 
 ret = RetrieverChatBot()
 
-question = "What is hatsune miku?"
+question = "How many kanjis are there?"
 
-ret.answer(question)
+print(ret.answer(question))
 

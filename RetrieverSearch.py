@@ -14,7 +14,7 @@ from haystack.retriever.sparse import BM25Retriever
 import pickle
 
 import spacy
-from Searcher import Search_google
+from Searcher import Search
  
 
 class RetrieverChatBot:
@@ -49,14 +49,18 @@ class RetrieverChatBot:
             
             answers.append(self.nlp_model(QA_input))
         
-        finalAnswer = max(answers, key=lambda x:x['score'])
+        # finalAnswer = max(answers, key=lambda x:x['score'])
+
+        finalAnswers = [x for x in answers if x["score"] > 0.3]
         
-        if finalAnswer["score"] < 0.60:
+        if len(finalAnswers) == 0:
             print("I need to investigate more about it")
             self.investigate(question)
             self.answer(question)
-        
-        return finalAnswer["answer"]
+
+        finalSpeach = " or ".join([x["answer"] for x in finalAnswers])
+
+        return finalSpeach
         
     
     def select_info(self,info):
@@ -75,20 +79,14 @@ class RetrieverChatBot:
             
                 if size >= min_words_per_paragraph:
                     selected.append(paragraph)
+
+        return selected
         
     def investigate(self, query):
         
         text, phrase, list_of_nouns = self.get_searches(query)
-        
-        text_results = Search_google(query=text, min_words = 500)
-        phrase_results = Search_google(query=phrase, min_words = 500)
-        
-        noun_results = []
-        
-        for noun in list_of_nouns:
-            noun_results = noun_results + Search_google(query=noun, min_words = 500)
-            
-        total_info = text_results + phrase_results + noun_results
+
+        total_info = Search([text,phrase]+ list_of_nouns,500)
     
         contexts = self.select_info(total_info)
 
