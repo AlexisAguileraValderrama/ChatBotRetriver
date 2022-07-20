@@ -16,6 +16,10 @@ import pickle
 import spacy
 from Searcher import Search
  
+import numpy as np
+import matplotlib.pyplot as plt
+
+import statistics
 
 class RetrieverChatBot:
     
@@ -49,14 +53,20 @@ class RetrieverChatBot:
             
             answers.append(self.nlp_model(QA_input))
         
+        
+        scores = [x["score"] for x in answers]
+
+        std = statistics.stdev(scores)
+
         # finalAnswer = max(answers, key=lambda x:x['score'])
 
-        finalAnswers = [x for x in answers if x["score"] > 0.3]
+        finalAnswers = [x for x in answers if x["score"] > std]
         
-        if len(finalAnswers) == 0:
+        
+        if len(finalAnswers) == 0 or std < 0.05:
             print("I need to investigate more about it")
             self.investigate(question)
-            self.answer(question)
+            return self.answer(question)
 
         finalSpeach = " or ".join([x["answer"] for x in finalAnswers])
 

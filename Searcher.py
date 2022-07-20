@@ -16,6 +16,8 @@ import re
 
 def Search(queries, min_words = 500):
 
+    queries = list(set(queries))
+
     urls = get_urls(queries)
 
     pages = []
@@ -23,24 +25,26 @@ def Search(queries, min_words = 500):
     for url in urls[:5]:
 
         r = requests.get(url)
-        print(r)
-        
-        innerHtml = r.content
+        if r.ok:
+            innerHtml = r.content
 
-        ##Use BeautifulSoup to convert the html file to plain text
-        soup = BeautifulSoup(innerHtml, "html.parser")
-        html_text = soup.get_text()
-        html_text = re.sub('(?<=\n)\s+\n', '\n', html_text)
-        html_text = re.sub('\s{2,}', '\n', html_text)
-        html_text = re.sub('\[\d+]', '', html_text)
+            ##Use BeautifulSoup to convert the html file to plain text
+            soup = BeautifulSoup(innerHtml, "html.parser")
+            html_text = soup.get_text()
+
+            if html_text:
+
+                html_text = re.sub('(?<=\n)\s+\n', '\n', html_text)
+                html_text = re.sub('\s{2,}', '\n', html_text)
+                html_text = re.sub('\[\d+]', '', html_text)
 
 
-        #Detect if the text is in english
-        language = detect(html_text)
+                #Detect if the text is in english
+                language = detect(html_text)
 
-        if len(html_text.split(" ")) > min_words and language == 'en':
-            ##Add the plain text to the rawdata list
-            pages.append(html_text)
+                if len(html_text.split(" ")) > min_words and language == 'en':
+                    ##Add the plain text to the rawdata list
+                    pages.append(html_text)
                 
     return pages
 

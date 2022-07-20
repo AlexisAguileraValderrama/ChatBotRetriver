@@ -1,11 +1,9 @@
 
-
-
 from RetrieverSearch import RetrieverChatBot
 
 ret = RetrieverChatBot()
 
-question = "How many kanjis are there?"
+question = "when was league of legends created?"
 
 print(ret.answer(question))
 
