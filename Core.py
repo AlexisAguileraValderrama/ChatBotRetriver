@@ -3,7 +3,9 @@ from RetrieverSearch import RetrieverChatBot
 
 ret = RetrieverChatBot()
 
-question = "when was league of legends created?"
+question = "how does lcd tv work?"
 
 print(ret.answer(question))
+
+
 

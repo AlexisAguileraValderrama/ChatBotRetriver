@@ -36,6 +36,8 @@ class RetrieverChatBot:
             self.nlp_model = pickle.load(config_dictionary_file)
             
         self.nlp = spacy.load("en_core_web_sm")
+
+        self.tried = False
             
         print("Hello fellow, tell me a question ;)")
         
@@ -65,8 +67,13 @@ class RetrieverChatBot:
         
         if len(finalAnswers) == 0 or std < 0.05:
             print("I need to investigate more about it")
-            self.investigate(question)
-            return self.answer(question)
+            if not self.tried:
+                self.tried = True
+                self.investigate(question)
+                return self.answer(question)
+            else:
+                self.tried = False
+                return "Sorry, I could't get a satifactory answer"
 
         finalSpeach = " or ".join([x["answer"] for x in finalAnswers])
 
@@ -96,7 +103,7 @@ class RetrieverChatBot:
         
         text, phrase, list_of_nouns = self.get_searches(query)
 
-        total_info = Search([text,phrase]+ list_of_nouns,500)
+        total_info = Search([text,phrase]+ list_of_nouns,500,5)
     
         contexts = self.select_info(total_info)
 
