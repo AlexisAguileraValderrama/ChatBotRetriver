@@ -6,6 +6,9 @@ Created on Thu Jul 14 21:54:41 2022
 @author: serapf
 """
 
+import os
+from xmlrpc.client import ResponseError
+
 from haystack.document_stores.elasticsearch import ElasticsearchDocumentStore
 
 from haystack.retriever.sparse import BM25Retriever
@@ -14,36 +17,51 @@ from haystack.retriever.sparse import BM25Retriever
 import pickle
 
 import spacy
-from Searcher import Search
- 
-import numpy as np
-import matplotlib.pyplot as plt
+from RetrieverSearch.Searcher import Search
 
 import statistics
 
 class RetrieverChatBot:
     
-    def __init__(self):
+    def __init__(self, elastic_host):
         
-        self.document_store = ElasticsearchDocumentStore(host='localhost',
+        self.document_store = ElasticsearchDocumentStore(host=elastic_host,
                                                     username='',
                                                     password='',
                                                     index='squad_docs')
         
         self.retriever = BM25Retriever(self.document_store)
         
-        with open('nlp_transformer', 'rb') as config_dictionary_file:
-            self.nlp_model = pickle.load(config_dictionary_file)
+        cmd = 'ls -l'
+        os.system(cmd)
+        
+        with open('app/RetrieverSearch/nlp_transformer', 'rb') as config_dictionary_file:
+             self.nlp_model = pickle.load(config_dictionary_file)
             
         self.nlp = spacy.load("en_core_web_sm")
 
         self.tried = False
             
-        print("Hello fellow, tell me a question ;)")
+        print("Hello fellow, ask me a question ;)")
         
     def answer(self, question):
         
         responses = self.retriever.retrieve(question)
+
+        if len(responses) == 0:
+            print("I need to investigate more about it")
+            if not self.tried:
+                self.tried = True
+                self.investigate(question)
+                return self.answer(question)
+            else:
+                self.tried = False
+                final_response = {
+                    "finalSpeach" : "Sorry, I could't get a satifactory answer",
+                    "answers" : []
+                }
+                return final_response    
+
         
         answers = []
 
@@ -56,16 +74,7 @@ class RetrieverChatBot:
             answers.append(self.nlp_model(QA_input))
         
         
-        scores = [x["score"] for x in answers]
-
-        std = statistics.stdev(scores)
-
-        # finalAnswer = max(answers, key=lambda x:x['score'])
-
-        finalAnswers = [x for x in answers if x["score"] > std]
-        
-        
-        if len(finalAnswers) == 0 or std < 0.05:
+        if len(answers) == 0:
             print("I need to investigate more about it")
             if not self.tried:
                 self.tried = True
@@ -73,11 +82,52 @@ class RetrieverChatBot:
                 return self.answer(question)
             else:
                 self.tried = False
-                return "Sorry, I could't get a satifactory answer"
 
-        finalSpeach = " or ".join([x["answer"] for x in finalAnswers])
+                final_response = {
+                    "finalSpeach" : "Sorry, I could't get a satifactory answer",
+                    "answers" : []
+                }
 
-        return finalSpeach
+                return final_response     
+
+        scores = [x["score"] for x in answers]
+
+        std = statistics.stdev(scores)
+
+        sorted_answers = sorted(answers, key=lambda x: x['score'], reverse=True)
+
+        for dict in sorted_answers:
+            del dict["start"]
+            del dict["end"]
+
+        finalAnswers = [x for x in sorted_answers if x["score"] > std]
+        
+        if std < 0.05:
+            print("I need to investigate more about it")
+            if not self.tried:
+                self.tried = True
+                self.investigate(question)
+                return self.answer(question)
+            else:
+                self.tried = False
+
+                final_response = {
+                    "finalSpeach" : "Sorry, I could't get a satifactory answer",
+                    "answers" : sorted_answers
+                }
+
+                return final_response         
+
+        list_responses = list(set([x["answer"] for x in finalAnswers]))
+
+        finalSpeach = " or ".join(list_responses)
+
+        final_response = {
+            "finalSpeach" : finalSpeach,
+            "answers" : sorted_answers
+        }
+
+        return final_response
         
     
     def select_info(self,info):
@@ -115,6 +165,9 @@ class RetrieverChatBot:
             })
             
         self.document_store.write_documents(squad_docs)
+
+        print("Si llego :0")
+
             
         
     def get_searches(self, query):

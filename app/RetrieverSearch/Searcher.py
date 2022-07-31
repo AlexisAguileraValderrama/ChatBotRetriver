@@ -27,7 +27,6 @@ def Search(queries, min_words = 500, num_pages = 10):
     pages = []
 
     headers = requests.utils.default_headers()
-
     headers.update(
     {
         'User-Agent': 'My User Agent 1.0',
@@ -45,6 +44,7 @@ def Search(queries, min_words = 500, num_pages = 10):
         for url in urls:
             try:
                 r = requests.get(url,headers=headers)
+                # print(r.status_code)
                 if r.ok:
                     innerHtml = r.content
 
@@ -65,8 +65,8 @@ def Search(queries, min_words = 500, num_pages = 10):
                         if len(html_text.split(" ")) > min_words and language == 'en':
                             ##Add the plain text to the rawdata list
                             pages.append(html_text)
-            except:
-                print("Something went wrong")
+            except Exception as e:
+                print(f"Something went wrong {e}")
             
             if num_pages <= len(pages):
                 break
@@ -80,7 +80,11 @@ def get_urls(searches, deep = 0):
 
     valid_urls = []
 
-    headers = {'Accept-Encoding': 'identity'}
+    headers = requests.utils.default_headers()
+    headers.update(
+    {
+        'User-Agent': 'My User Agent 1.0',
+    })
 
     for query in searches:
 
