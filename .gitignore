@@ -1,5 +1,7 @@
 nlp_transformer
 apikey.txt
+RetrieverChatEnv
+*.pem
 
 *.bundle.*
 lib/
