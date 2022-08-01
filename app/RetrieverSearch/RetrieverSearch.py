@@ -7,6 +7,7 @@ Created on Thu Jul 14 21:54:41 2022
 """
 
 import os
+from typing import final
 from xmlrpc.client import ResponseError
 
 from haystack.document_stores.elasticsearch import ElasticsearchDocumentStore
@@ -31,38 +32,23 @@ class RetrieverChatBot:
                                                     index='squad_docs')
         
         self.retriever = BM25Retriever(self.document_store)
-        
-        cmd = 'ls -l'
-        os.system(cmd)
+
         
         with open('app/RetrieverSearch/nlp_transformer', 'rb') as config_dictionary_file:
              self.nlp_model = pickle.load(config_dictionary_file)
             
         self.nlp = spacy.load("en_core_web_sm")
-
-        self.tried = False
             
         print("Hello fellow, ask me a question ;)")
-        
-    def answer(self, question):
+
+    def inner_answer(self, question):
         
         responses = self.retriever.retrieve(question)
 
         if len(responses) == 0:
             print("I need to investigate more about it")
-            if not self.tried:
-                self.tried = True
-                self.investigate(question)
-                return self.answer(question)
-            else:
-                self.tried = False
-                final_response = {
-                    "finalSpeach" : "Sorry, I could't get a satifactory answer",
-                    "answers" : []
-                }
-                return final_response    
+            return False  
 
-        
         answers = []
 
         for response in responses:
@@ -73,23 +59,6 @@ class RetrieverChatBot:
             
             answers.append(self.nlp_model(QA_input))
         
-        
-        if len(answers) == 0:
-            print("I need to investigate more about it")
-            if not self.tried:
-                self.tried = True
-                self.investigate(question)
-                return self.answer(question)
-            else:
-                self.tried = False
-
-                final_response = {
-                    "finalSpeach" : "Sorry, I could't get a satifactory answer",
-                    "answers" : []
-                }
-
-                return final_response     
-
         scores = [x["score"] for x in answers]
 
         std = statistics.stdev(scores)
@@ -101,22 +70,10 @@ class RetrieverChatBot:
             del dict["end"]
 
         finalAnswers = [x for x in sorted_answers if x["score"] > std]
-        
+
         if std < 0.05:
             print("I need to investigate more about it")
-            if not self.tried:
-                self.tried = True
-                self.investigate(question)
-                return self.answer(question)
-            else:
-                self.tried = False
-
-                final_response = {
-                    "finalSpeach" : "Sorry, I could't get a satifactory answer",
-                    "answers" : sorted_answers
-                }
-
-                return final_response         
+            return False
 
         list_responses = list(set([x["answer"] for x in finalAnswers]))
 
@@ -125,6 +82,27 @@ class RetrieverChatBot:
         final_response = {
             "finalSpeach" : finalSpeach,
             "answers" : sorted_answers
+        }
+
+        return final_response
+
+    def answer(self, question):
+        
+        answer = self.inner_answer(question)
+        
+        if answer != False:
+            return answer
+        
+        self.investigate(question)
+
+        answer = self.inner_answer(question)
+        
+        if answer != False:
+            return answer
+
+        final_response = {
+            "finalSpeach" : "I couldn't get a satisfactory answer",
+            "answers" : []
         }
 
         return final_response
@@ -154,6 +132,10 @@ class RetrieverChatBot:
         text, phrase, list_of_nouns = self.get_searches(query)
 
         total_info = Search([text,phrase]+ list_of_nouns,500,5)
+
+        if not total_info:
+            print("I couldn't investigate")
+            return False
     
         contexts = self.select_info(total_info)
 

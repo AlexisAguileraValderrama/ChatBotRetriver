@@ -11,10 +11,18 @@ body{
     color : white;
 }
 
-#features{
+#about{
     background-color: #3a3a3a;
     color : white;
     
+}
+
+/* Feature section */
+#more-answers{
+    background-color: #512DA8;
+    padding: 1% 1%;
+    color: white;
+    text-align: center;
 }
 
 .container-fluid{
@@ -75,11 +83,6 @@ p{
     transform: rotate(25deg);
 }
 
-/* Feature section */
-#features{
-    padding: 1% 1%;
-}
-
 /* Feature Box  */
 .feature-box{
     text-align: center;
@@ -94,22 +97,6 @@ p{
 
 .icon:hover{
     color: brown;
-}
-
-/* Testimonial section */
-
-#testimonials{
-    background-color: #ff4c68;
-    padding: 7% 15%;
-    text-align: center;
-    color: #FFFFFF;
-
-}
-
-.testimonial-image{
-    width: 15%;
-    border-radius: 100%;
-    padding: 1%;
 }
 
 /* press section */
@@ -127,13 +114,6 @@ p{
 
 .btn{
     margin: 0.5rem;
-}
-
-
-
-.more-answers{
-    background-color: #651FFF;
-    text-align: center;
 }
 
 .card{

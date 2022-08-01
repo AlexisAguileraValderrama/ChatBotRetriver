@@ -37,7 +37,7 @@
 
     <!-- Nav Bar -->
         <nav class="navbar navbar-expand-lg navbar-dark">
-            <a class="navbar-brand" href="">ChatBotRetrieverr</a>
+            <a class="navbar-brand" href="">ChatBotRetriever</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
@@ -45,13 +45,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="">Pricing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="">Download</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                 </ul>
             </div>
@@ -66,12 +60,11 @@
                         <div class="d-flex align-items-center">
                             <div class="text-left pr-1"><img src="https://img.icons8.com/color/40/000000/guest-female.png" width="30" class="img1" /></div>
                             <div class="pr-2 pl-1">
-                                <span class="name">Serapf</span>
+                                <span class="name">ChatBotRetriever</span>
                                 <p class="msg">Hello fellow, tell me a question ;)</p>
                             </div>
                         </div>
                 
-                        <div class="text-center"><span class="between">Call started at 10:47am</span></div>
             
                     </div>
             
@@ -80,7 +73,7 @@
                             
                             <input type="text number" id ="question-window" name="question" class="form-control" placeholder="Type a question...">
                 
-                            <button type="submit" class="btn btn-primary"> Ask </button>
+                            <button id = "ask-button" type="submit" class="btn btn-primary"> Ask </button>
 
                         </nav>
                     </form>
@@ -89,57 +82,61 @@
         
     </section>
 
+    <section id="more-answers">
+        <div id="accordion">
+            <div class = "container-fluid">
+                
+                <h3>Check out more information about answers</h3>
 
-    <div class = "more-answers" id="accordion">
-        <div class = "container-fluid">
-            
-            <h3>Check out more information about answers</h3>
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-primary" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        CHECK OUT!!!
+                        </button>
+                    </h5>
+                    </div>
+                
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body">
+                        
+                        <table class="table">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Answer</th>
+                                <th scope="col">Score</th>
+                            </tr>
+                            </thead>
+                            <tbody id = "answers-tbody">
+                            
+                            </tbody>
+                        </table>
 
-            <div class="card">
-                <div class="card-header" id="headingOne">
-                  <h5 class="mb-0">
-                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      CHECK OUT!!!
-                    </button>
-                  </h5>
+                    </div>
+                    </div>
                 </div>
-            
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-                  <div class="card-body">
-                    
-                    <table class="table">
-                        <thead class="thead-dark">
-                          <tr>
-                            <th scope="col">Answer</th>
-                            <th scope="col">Score</th>
-                          </tr>
-                        </thead>
-                        <tbody id = "answers-tbody">
-                          
-                        </tbody>
-                      </table>
 
-                  </div>
-                </div>
-              </div>
-
-
-        </div> 
-    </div>
-
-
-    <section id="features">
-
-        <div>
-            <h3>About this project</h3>
+            </div> 
         </div>
+    </section>
 
-        <div>
-            <p>ChatBotRetriever is a chat bot developed for answering any question (Trivia-like questions are preferred).
-                It uses technologies as webscraping, elasticsearch, amazon 2EC sever and transformers to work</p>
 
-            <p>This chatbot and webpage is developed by Aguilera Valderrama Alexis Fernando (Serapf) 
-                as part of social service named ""</p>
+    <section id="about">
+
+        <div class = "container-fluid">
+
+            <div>
+                <h3 style="margin: 3% 0%;">About this project</h3>
+            </div>
+
+            <div>
+                <p>ChatBotRetriever is a chat bot developed for answering any question (Trivia-like questions are preferred).
+                    It uses technologies as webscraping, elasticsearch, amazon 2EC sever and transformers to work</p>
+
+                <p>This chatbot and webpage is developed by Aguilera Valderrama Alexis Fernando (Serapf) 
+                    as part of social service named "" imparted by "Instituto de Investigaciones de Matematicas Aplicadas y Sistemas (IIMAS)" from UNAM</p>
+            </div>
+
         </div>
 
     

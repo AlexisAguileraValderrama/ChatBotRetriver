@@ -35,15 +35,18 @@ def Search(queries, min_words = 500, num_pages = 10):
 
     while True:
 
-
         urls = get_urls(queries, deep=deep)
+
+        if not urls:
+            return pages
 
         urls = [url for url in urls if url not in viewurl]
         viewurl = viewurl+ urls
 
         for url in urls:
+
             try:
-                r = requests.get(url,headers=headers)
+                r = requests.get(url,headers=headers, timeout=5)
                 # print(r.status_code)
                 if r.ok:
                     innerHtml = r.content

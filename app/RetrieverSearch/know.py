@@ -29,8 +29,8 @@ def thread_func(num_questions, i):
 ret_list = []
 th_list = []
 
-num_threads = 3
-num_questions_per_thread = 100
+num_threads = 2
+num_questions_per_thread = 300
 
 for i in range(num_threads):
     ret_list.append(RetrieverChatBot("3.234.20.173"))
