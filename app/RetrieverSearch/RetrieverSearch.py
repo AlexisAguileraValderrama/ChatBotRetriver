@@ -7,20 +7,24 @@ Created on Thu Jul 14 21:54:41 2022
 """
 
 import os
-from typing import final
-from xmlrpc.client import ResponseError
 
 from haystack.document_stores.elasticsearch import ElasticsearchDocumentStore
 
 from haystack.retriever.sparse import BM25Retriever
 
-# Step 1
-import pickle
 
 import spacy
 from RetrieverSearch.Searcher import Search
 
 import statistics
+
+import json
+import requests
+
+API_TOKEN = "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"
+
+headers = {"Authorization": f"Bearer {API_TOKEN}"}
+API_URL = "https://api-inference.huggingface.co/models/deepset/roberta-base-squad2"
 
 class RetrieverChatBot:
     
@@ -32,14 +36,16 @@ class RetrieverChatBot:
                                                     index='squad_docs')
         
         self.retriever = BM25Retriever(self.document_store)
-
-        
-        with open('app/RetrieverSearch/nlp_transformer', 'rb') as config_dictionary_file:
-             self.nlp_model = pickle.load(config_dictionary_file)
             
         self.nlp = spacy.load("en_core_web_sm")
             
         print("Hello fellow, ask me a question ;)")
+
+    def query(self,payload):
+        data = json.dumps(payload)
+        response = requests.request("POST", API_URL, headers=headers, data=data)
+        return json.loads(response.content.decode("utf-8"))
+
 
     def inner_answer(self, question):
         
@@ -57,7 +63,7 @@ class RetrieverChatBot:
                 'context': response.to_dict()['content']
             }
             
-            answers.append(self.nlp_model(QA_input))
+            answers.append(self.query(QA_input))
         
         scores = [x["score"] for x in answers]
 
